@@ -2,9 +2,163 @@
 
 - hosts: 127.0.0.1
   connection: local
-
   tasks:
+    - name: add ssh key
+      shell: "ssh-add -k {{ lookup('env','HOME') }}/Dropbox/id_rsa"
+
+    - name: tap caskroom/versions to provide nightlies and canary builds
+      homebrew_tap: tap=caskroom/versions  state=present
+
     - name: install personal cask applications
       homebrew_cask: name={{item}} state=present
+      environment:
+        HOMEBREW_CASK_OPTS: --appdir=/Applications --caskroom={{ lookup('env','HOME') }}/.homebrew/Caskroom
       with_items:
+        # general
         - spotify
+        - google-chrome
+
+        # general productivity
+        - iterm2-nightly
+        - google-chrome-canary
+        - 1password
+
+        # virtualization
+        - virtualbox
+        - vagrant
+
+    - name: install personal brew applications
+      homebrew: name={{item}} state=latest
+      with_items:
+        - macvim
+        - vim
+        - ctags
+        - fzf
+
+        # docker
+        - docker
+        - docker-machine
+
+    - name: create ~/git, ~/.vim/colors  directories
+      become: yes
+      file:
+        path: "{{item}}"
+        state: directory
+        owner: zachwalton
+        mode: 0750
+      with_items:
+        - "{{ lookup('env','HOME') }}/git"
+        - "{{ lookup('env','HOME') }}/.vim"
+        - "{{ lookup('env','HOME') }}/.vim/colors"
+
+    - name: clone ~/git/dotfiles
+      shell: "git clone https://github.com/zach-walton/dotfiles.git {{ lookup('env','HOME') }}/git/dotfiles"
+      ignore_errors: yes
+    - name: create dotfile links
+      shell: "/bin/bash {{ lookup('env','HOME') }}/git/dotfiles/scripts/create_links.sh"
+
+    - name: install vim plugins
+      shell: vim +PluginInstall +qall
+
+    - name: install vim linters
+      shell: "{{item}}"
+      with_items:
+        - "npm install -g standard"
+        - "npm install -g eslint"
+        - "npm install -g jsonlint"
+        - "npm install -g dockerfile_lint"
+        - "npm install -g pug-lint"
+        - "sudo pip install yamllint"
+        - "sudo gem install mdl"
+  roles:
+    - roderik.superlumic-homebrew
+    - roderik.superlumic-computername
+    - roderik.superlumic-osx-defaults
+    - roderik.superlumic-node
+    - roderik.superlumic-postgresql
+    - roderik.superlumic-mysql
+  vars:
+    - computername: zachintosh
+    - git_user_name: Zach Walton
+    - git_user_email: zacwalt@gmail.com
+    - osx_defaults:
+      - domain: 'com.apple.dock'
+        key: 'autohide'
+        type: boolean
+        value: true
+      - domain: 'com.apple.dock'
+        key: 'minimize-to-application'
+        type: integer
+        value: 1
+      - domain: 'com.apple.dock'
+        key: 'show-process-indicators'
+        type: boolean
+        value: true
+      - domain: 'NSGlobalDomain'
+        key: 'NSTableViewDefaultSizeMode'
+        type: integer
+        value: 1
+      - domain: 'NSGlobalDomain'
+        key: 'KeyRepeat'
+        type: integer
+        value: 2
+      - domain: 'NSGlobalDomain'
+        key: 'InitialKeyRepeat'
+        type: integer
+        value: 15
+      - domain: 'com.apple.menuextra.battery'
+        key: 'ShowPercent'
+        type: string
+        value: 'YES'
+      - domain: 'NSGlobalDomain'
+        key: 'NSNavPanelExpandedStateForSaveMode'
+        type: boolean
+        value: true
+      - domain: 'NSGlobalDomain'
+        key: 'PMPrintingExpandedStateForPrint'
+        type: boolean
+        value: true
+      - domain: 'com.apple.dock'
+        key: 'tilesize'
+        type: float
+        value: 32
+      - domain: 'com.apple.dock'
+        key: 'autohide-time-modifier'
+        type: int
+        value: 0
+      - domain: 'com.apple.dock'
+        key: 'autohide-delay'
+        type: int
+        value: 0
+      - domain: 'NSGlobalDomain'
+        key: 'NSQuitAlwaysKeepsWindows'
+        type: boolean
+        value: false
+      - domain: 'com.apple.desktopservices'
+        key: 'DSDontWriteNetworkStores'
+        type: boolean
+        value: true
+      - domain: 'com.apple.print.PrintingPrefs'
+        key: 'Quit When Finished'
+        type: boolean
+        value: true
+      - domain: 'com.apple.Safari'
+        key: 'IncludeInternalDebugMenu'
+        type: boolean
+        value: true
+      - domain: 'com.apple.Safari'
+        key: 'IncludeDevelopMenu'
+        type: boolean
+        value: true
+      - domain: 'com.apple.Safari'
+        key: 'WebKitDeveloperExtrasEnabledPreferenceKey'
+        type: boolean
+        value: true
+      - domain: 'com.apple.Safari'
+        key: 'com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled'
+        type: boolean
+        value: true
+      - domain: 'NSGlobalDomain'
+        key: 'WebKitDeveloperExtras'
+        type: boolean
+        value: true
