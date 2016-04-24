@@ -11,9 +11,3 @@
 
 - src: https://github.com/superlumic/ansible-role-node.git
   name: roderik.superlumic-node
-
-- src: https://github.com/superlumic/ansible-role-postgresql.git
-  name: roderik.superlumic-node
-
-- src: https://github.com/superlumic/ansible-role-mysql.git
-  name: roderik.superlumic-node

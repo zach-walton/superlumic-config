@@ -75,8 +75,6 @@
     - roderik.superlumic-computername
     - roderik.superlumic-osx-defaults
     - roderik.superlumic-node
-    - roderik.superlumic-postgresql
-    - roderik.superlumic-mysql
   vars:
     - computername: zachintosh
     - git_user_name: Zach Walton
