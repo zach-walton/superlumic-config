@@ -12,7 +12,7 @@
     - name: install personal cask applications
       homebrew_cask: name={{item}} state=present
       environment:
-        HOMEBREW_CASK_OPTS: --appdir=/Applications --caskroom={{ lookup('env','HOME') }}/.homebrew/Caskroom
+        HOMEBREW_CASK_OPTS: --appdir=/Applications --caskroom={{ lookup('env','HOME') }}/homebrew/Caskroom
       with_items:
         # general
         - spotify
