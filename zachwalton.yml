@@ -160,3 +160,7 @@
         key: 'WebKitDeveloperExtras'
         type: boolean
         value: true
+      - domain: 'com.apple'
+        key: 'swipescrolldirection'
+        type: boolean
+        value: false
